@@ -1,0 +1,42 @@
+# This file goes in ~/.getmail/, and to tell getmail to use it,
+# provide just the filename as value to the -r option.
+#
+# See http://pyropus.ca/software/getmail/configuration.html for
+# information on configuring getmail.
+
+[retriever]  # For STARTTLS, use SimpleIMAPRetriever ...
+type = SimpleIMAPSSLRetriever
+server = mail.bibalex.org
+port = 993  # ... and use port 143.
+# If this copy of the file is not the one located under ~/.getmail/,
+# the password specified below is unlikely the actual password.
+# Obviously, ~/.getmail/ needs to be protected with appropriate file
+# permissions to prevent unwanted access to login information.
+username = youssef.eldakar
+password = trees
+mailboxes = ('Diaries', )
+
+[destination]
+type = MultiDestination
+# http://pyropus.ca/software/getmail/configuration.html#destination-multidestination
+#
+# "Because Maildir and Mboxrd destinations are common, you can specify
+# them directly as a shortcut if they do not require a user parameter.
+# If the string (after expansion; see below) starts with a dot or slash
+# and ends with a slash, it specifies the path of a Maildir destination,
+# while if it starts with a dot or a slash and does not end with a
+# slash, it specifies the path of [an] Mboxrd destination."
+#
+# Note also that cur/, new/, and tmp/ must exist in the directory if
+# using a Maildir destination.
+destinations = ('~/Maildir/', )
+
+[options]
+#delete = true
+
+# Keep or drop messages based on a pattern match on the subject line and
+# email address of the sender and write diary entries to
+# ~/Documents/diaries.
+[filter-1]
+type = Filter_external
+path = ~/task-scripts/diaries/filter-diaries

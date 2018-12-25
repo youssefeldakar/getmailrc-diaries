@@ -1,0 +1,41 @@
+#!/usr/bin/perl -w
+
+# In Debian, Mail::Message is part of the libmail-box-perl package.
+use Mail::Message;
+
+use MIME::QuotedPrint;
+
+$my_email = 'youssef.eldakar@bibalex.org';
+
+# Where to write the files.
+$prefix = "$ENV{HOME}/Documents/diaries";
+
+$msg = Mail::Message->read(\*STDIN);
+
+if ($msg->subject =~ /^Diary for ([^,]+)(, Revision (.+))?$/ && lc($msg->sender->address) eq $my_email) {
+  # Keep (as defined by exitcodes_keep in the rc file).
+  $exitcode =  0;
+
+  # Typically, the message would be printed on STDOUT for getmail to
+  # write to the mailbox, but this instead writes the diary entry to a
+  # file under $prefix using the date and revision number (if present)
+  # as name.
+
+  $diary = $3 ? "$prefix/$1,$3" : "$prefix/$1";
+
+  if (-e $diary) {
+    die "$diary: File exists";
+  }
+
+  unless (open FH, ">$diary") {
+    die "$diary: Failed to open file for writing";
+  }
+
+  print FH decode_qp($msg->body);
+  close FH;
+} else {
+  # Drop (as defined by exitcodes_drop in the rc file).
+  $exitcode = 99;
+}
+
+exit $exitcode;
